@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export type Data = {
   id: number;
+  userId: string;
   title: string;
   author: string;
   genre: string;

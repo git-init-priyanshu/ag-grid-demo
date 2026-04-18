@@ -1,15 +1,13 @@
 import { type ColDef } from "ag-grid-community";
 import type { Data } from "../../api/types";
-// import {
-//   DateRenderer,
-//   QuetionsRenderer,
-//   LinkRenderer,
-//   SourceRenderer,
-// } from "./-cellRenderer";
-// import CustomRichSelectEditor from "./-customCellEditor";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const columns: ColDef<Data, any>[] = [
+  {
+    headerName: "User ID",
+    field: "userId",
+    hide: true,
+  },
   {
     headerName: "Title",
     field: "title",

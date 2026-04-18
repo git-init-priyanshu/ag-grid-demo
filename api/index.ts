@@ -6,8 +6,11 @@ import { z } from "zod";
 
 // ─── Server Actions ─────────────────────────────────────────────
 
-export async function getBooks() {
+export async function getBooks(userId: string) {
   const books = await prisma.book.findMany({
+    where: {
+      OR: [{ userId }, { userId: "" }],
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -18,7 +21,10 @@ export async function getBooks() {
   }));
 }
 
-export async function addBooks(input: z.infer<typeof AddBodySchema>) {
+export async function addBooks(
+  userId: string,
+  input: z.infer<typeof AddBodySchema>,
+) {
   const parsed = AddBodySchema.parse(input);
 
   const results = [];
@@ -27,7 +33,10 @@ export async function addBooks(input: z.infer<typeof AddBodySchema>) {
     const { old_id, ...bookData } = item;
 
     const created = await prisma.book.create({
-      data: bookData,
+      data: {
+        ...bookData,
+        userId,
+      },
     });
 
     results.push({
