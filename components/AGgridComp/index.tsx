@@ -28,7 +28,12 @@ type AGgridCompProps<
   isLoading: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColDef<T, any>[];
-  bulkAddMutation?: UseMutationResult<T, Error, z.infer<A>, unknown>;
+  bulkAddMutation?: UseMutationResult<
+    (T & { old_id?: string })[],
+    Error,
+    z.infer<A>,
+    unknown
+  >;
   addUpdateSchema?: A;
   bulkEditMutation?: UseMutationResult<
     void | undefined,

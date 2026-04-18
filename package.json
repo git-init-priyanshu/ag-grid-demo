@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -14,6 +14,7 @@
     "@solana/web3.js": "^1.98.4",
     "@tanstack/react-query": "^5.90.21",
     "ag-grid-react": "^35.1.0",
+    "axios": "^1.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.575.0",
