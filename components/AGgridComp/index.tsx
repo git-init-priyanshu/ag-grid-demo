@@ -29,7 +29,7 @@ type AGgridCompProps<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   columns: ColDef<T, any>[];
   bulkAddMutation?: UseMutationResult<
-    (T & { old_id?: string })[],
+    T[],
     Error,
     z.infer<A>,
     unknown
@@ -96,7 +96,7 @@ function AGgridComp<
   const [editedRows, setEditedRows] = useState<Map<string, Partial<T>>>(
     new Map(),
   );
-  // console.log("editedRows: ", editedRows);
+  console.log("editedRows: ", editedRows);
 
   /**
    * rowOldData - Preserves original state of edited rows for rollback/cancel operations
@@ -121,6 +121,8 @@ function AGgridComp<
     new Map(),
   );
   // console.log("notAddedRows: ", notAddedRows);
+  
+
 
   const {
     addNewRow,
@@ -263,42 +265,6 @@ function AGgridComp<
     setColDefs([...columns]);
   }, [columns]);
 
-  /**
-   * Sync newly added rows with backend-generated data
-   *
-   * After successful bulk add operation:
-   * - Replaces temporary rows (with temp_ IDs) with actual backend data
-   * - Updates auto-incremented IDs from database to match local grid state
-   * - Prevents stale data by syncing without invalidating the entire query
-   * - Uses old_id from response to identify which temp row to replace
-   */
-  useEffect(() => {
-    if (!bulkAddMutation) return;
-    if (bulkAddMutation.data) {
-      const { api } = gridRef.current || {};
-      if (!api) return;
-
-      const tempRowsToRemove: T[] = [] as T[];
-      const rowsToAdd: T[] = [] as T[];
-      bulkAddMutation.data.forEach((row: T) => {
-        const data = row;
-        const oldId = String(row.old_id);
-        delete data.old_id;
-
-        rowsToAdd.push(data);
-        tempRowsToRemove.push({
-          ...data,
-          [uniqueIdentifier]: oldId,
-        });
-      });
-
-      api.applyTransaction({
-        remove: tempRowsToRemove,
-        add: rowsToAdd.reverse(),
-        addIndex: 0,
-      });
-    }
-  }, [bulkAddMutation?.data]);
 
   return (
     <>

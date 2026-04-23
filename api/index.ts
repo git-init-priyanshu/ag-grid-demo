@@ -27,44 +27,41 @@ export async function addBooks(
 ) {
   const parsed = AddBodySchema.parse(input);
 
-  const results = [];
+  const results = await prisma.book.createManyAndReturn({
+    data: parsed.map((book) => ({
+      ...book,
+      userId,
+    })),
+  });
 
-  for (const item of parsed.data) {
-    const { old_id, ...bookData } = item;
-
-    const created = await prisma.book.create({
-      data: {
-        ...bookData,
-        userId,
-      },
-    });
-
-    results.push({
-      ...created,
-      createdAt: created.createdAt.toISOString(),
-      old_id: old_id ?? undefined,
-    });
-  }
-
-  return results;
+  // Serialize dates for client consumption
+  return results.map((book) => ({
+    ...book,
+    createdAt: book.createdAt.toISOString(),
+  }));
 }
 
 export async function editBooks(input: z.infer<typeof EditBodySchema>) {
   const parsed = EditBodySchema.parse(input);
 
-  for (const item of parsed.data) {
-    const { id, ...updateData } = item;
+  await prisma.$transaction(async (tx) => {
+    for (const item of parsed) {
+      const { id, ...updateData } = item;
 
-    // Remove undefined values
-    const cleanData = Object.fromEntries(
-      Object.entries(updateData).filter(([, v]) => v !== undefined),
-    );
+      // Remove undefined values
+      const cleanData = Object.fromEntries(
+        Object.entries(updateData).filter(([, v]) => v !== undefined),
+      );
 
-    await prisma.book.update({
-      where: { id },
-      data: cleanData,
-    });
-  }
+      await tx.book.update({
+        where: { id },
+        data: cleanData,
+      });
+    }
+  }, {
+    maxWait: 15000, // 15s max waiting time to grab a connection
+    timeout: 30000, // 30s max time for transaction to finish
+  });
 }
 
 export async function deleteBooks(input: { account_ids: string[] }) {

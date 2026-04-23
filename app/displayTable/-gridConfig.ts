@@ -92,14 +92,14 @@ export const columns: ColDef<Data, any>[] = [
     minWidth: 180,
     editable: true,
   },
-  {
-    headerName: "Created At",
-    field: "createdAt",
-    filter: "agDateColumnFilter",
-    sortable: true,
-    width: 180,
-    editable: true,
-    valueFormatter: (params) =>
-      params.value ? new Date(params.value).toLocaleDateString() : "",
-  },
+  // {
+  //   headerName: "Created At",
+  //   field: "createdAt",
+  //   filter: "agDateColumnFilter",
+  //   sortable: true,
+  //   width: 180,
+  //   editable: true,
+  //   valueFormatter: (params) =>
+  //     params.value ? new Date(params.value).toLocaleDateString() : "",
+  // },
 ];
